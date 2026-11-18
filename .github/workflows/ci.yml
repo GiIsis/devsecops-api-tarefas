@@ -48,3 +48,15 @@ jobs:
           name: relatorio-semgrep
           path: semgrep.json
           if-no-files-found: error
+        
+      - name: Analisar dependências com npm audit
+        run: |
+          npm audit --json > npm-audit.json || test "$?" -eq 1
+          node -e "const r = require('./npm-audit.json'); console.log('Total reportado:', r.metadata.vulnerabilities.total)"
+
+      - name: Guardar relatório do npm audit
+        uses: actions/upload-artifact@v7
+        with:
+          name: relatorio-npm-audit
+          path: npm-audit.json
+          if-no-files-found: error
