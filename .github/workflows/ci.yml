@@ -27,3 +27,24 @@ jobs:
 
       - name: Rodar os testes
         run: npm test
+
+      - name: Instalar Semgrep
+        run: |
+          python3 -m venv "$RUNNER_TEMP/semgrep"
+          "$RUNNER_TEMP/semgrep/bin/python" -m pip install semgrep==1.178.0
+
+      - name: Analisar o código da API
+        run: >-
+          "$RUNNER_TEMP/semgrep/bin/semgrep" scan
+          --config p/javascript
+          --config p/expressjs
+          --metrics off
+          --json-output semgrep.json
+          index.js
+
+      - name: Guardar relatório do Semgrep
+        uses: actions/upload-artifact@v7
+        with:
+          name: relatorio-semgrep
+          path: semgrep.json
+          if-no-files-found: error
