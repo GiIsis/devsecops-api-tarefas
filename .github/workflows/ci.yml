@@ -60,3 +60,30 @@ jobs:
           name: relatorio-npm-audit
           path: npm-audit.json
           if-no-files-found: error
+
+      - name: Executar análise passiva com ZAP
+        run: |
+          node index.js &
+          api_pid=$!
+          trap 'kill "$api_pid" 2>/dev/null || true' EXIT
+
+          curl --fail --silent --show-error \
+            --retry 10 --retry-connrefused --retry-delay 1 \
+            http://127.0.0.1:3000/tarefas > /dev/null
+
+          relatorio="$RUNNER_TEMP/zap-out"
+          mkdir -p "$relatorio"
+          chmod a+w "$relatorio"
+
+          docker run --rm --network host \
+            -v "$GITHUB_WORKSPACE/.github/zap-passivo.yml:/zap/wrk/zap-passivo.yml:ro" \
+            -v "$relatorio:/zap/out" \
+            ghcr.io/zaproxy/zaproxy:2.17.0 \
+            zap.sh -cmd -autorun /zap/wrk/zap-passivo.yml
+
+      - name: Guardar relatório do ZAP
+        uses: actions/upload-artifact@v7
+        with:
+          name: relatorio-zap
+          path: ${{ runner.temp }}/zap-out/*.json
+          if-no-files-found: error
