@@ -1,0 +1,89 @@
+env:
+  contexts:
+    - name: api-tarefas
+      urls:
+        - "http://127.0.0.1:3000"
+  parameters:
+    failOnError: true
+    failOnWarning: true
+
+jobs:
+  - type: passiveScan-config
+    parameters:
+      scanOnlyInScope: true
+
+  - type: requestor
+    requests:
+      - name: Listar tarefas
+        url: "http://127.0.0.1:3000/tarefas"
+        method: GET
+        responseCode: 200
+
+      - name: Cadastrar tarefa fictícia
+        url: "http://127.0.0.1:3000/tarefas"
+        method: POST
+        headers:
+          - "Content-Type: application/json"
+        data: '{"titulo":"Preparar seminario"}'
+        responseCode: 201
+
+      - name: Concluir a tarefa cadastrada
+        url: "http://127.0.0.1:3000/tarefas/1"
+        method: PATCH
+        responseCode: 200
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 2
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/out
+      reportFile: zap-report.json
+      reportTitle: Análise passiva da API de tarefas
+
+    env:
+      contexts:
+        - name: api-tarefas
+          urls:
+            - "http://127.0.0.1:3000"
+      parameters:
+        failOnError: true
+        failOnWarning: true
+
+    jobs:
+      - type: passiveScan-config
+        parameters:
+          scanOnlyInScope: true
+
+      - type: requestor
+        requests:
+          - name: Listar tarefas
+            url: "http://127.0.0.1:3000/tarefas"
+            method: GET
+            responseCode: 200
+
+          - name: Cadastrar tarefa fictícia
+            url: "http://127.0.0.1:3000/tarefas"
+            method: POST
+            headers:
+              - "Content-Type: application/json"
+            data: '{"titulo":"Preparar seminario"}'
+            responseCode: 201
+
+          - name: Concluir a tarefa cadastrada
+            url: "http://127.0.0.1:3000/tarefas/1"
+            method: PATCH
+            responseCode: 200
+
+      - type: passiveScan-wait
+        parameters:
+          maxDuration: 2
+
+      - type: report
+        parameters:
+          template: traditional-json
+          reportDir: /zap/out
+          reportFile: zap-report.json
+          reportTitle: Análise passiva da API de tarefas
