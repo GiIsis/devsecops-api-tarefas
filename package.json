@@ -1,0 +1,23 @@
+{
+  "name": "devsecops-api-tarefas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GiIsis/devsecops-api-tarefas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GiIsis/devsecops-api-tarefas/issues"
+  },
+  "homepage": "https://github.com/GiIsis/devsecops-api-tarefas#readme",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
